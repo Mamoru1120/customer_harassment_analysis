@@ -384,19 +384,12 @@ function update(){
 
 //1.Save クリックイベント
 $("#save").on("click",function(){
-    const value = {
-      date: $("#date").val(),
-      time: $("#time").val(),
-      clame_content: $("#clame_content").val(),
-      response_content: $("#response_content").val()
-    };
-    const count = {
-      count: 
-    };
-    
-    const newPostRef = push(dbRef);//UnieqIDを発行
-    set(newPostRef, msg);//set(ID名, 値)
-
+  const key = localStorage.length+1;
+    const value = [];
+    value[0]= $("#date").val();
+    value[1]= $("#time").val();
+    value[2] = $("#clame_content").val();
+    value[3] = $("#response_content").val();
     const stabilizearray = JSON.stringify(value);
     localStorage.setItem(key,stabilizearray);
     const html = '<tr><td>'+key+'</td><td>'+value[0]+'</td><td>'+value[1]+'分</td><td>'+value[2]+'</td><td>'+value[3]+'</td></tr>';
