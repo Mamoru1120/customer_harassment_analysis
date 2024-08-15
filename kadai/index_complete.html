@@ -214,11 +214,88 @@
 
     </div>
         
+  <!-- chat機能画面 -->
 
+  <h2>チャット</h2>
+
+  <div id="chat">
+    <div class="uname">
+        名前：<input type="text" id="uname">
+    </div>
+    <div class="textarea">
+        <textarea id="text" cols="30" rows="10"></textarea>
+       <button id="send">送信</button>
+    </div>
+    <div id="output" style="overflow: auto;height: 300px;"></div>
+  </div>
 
     
 </main>
 
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- JQuery -->
+
+<!--** 以下Firebase **-->
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved } 
+  from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB_RXd___ztDKInn9c3ZLTGK2gm5cDDxcg",
+    authDomain: "customer-harassment-analysis.firebaseapp.com",
+    databaseURL: "https://customer-harassment-analysis-default-rtdb.firebaseio.com",
+    projectId: "customer-harassment-analysis",
+    storageBucket: "customer-harassment-analysis.appspot.com",
+    messagingSenderId: "991659597194",
+    appId: "1:991659597194:web:8db4faed3bc92efd7cfc73"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app); //RealtimeDBに接続
+  const dbRef = ref(db,"report_tool"); //RealtimeDB内の"chat"を使う
+
+  //データ登録(Click)
+  $("#send").on("click",function() {
+
+    const ymd = new Date();
+    const y = ymd.getFullYear();
+    const m = ymd.getMonth()+1;
+    const d = ymd.getDate();
+    const h = ymd.getHours();
+    const mi = ymd.getMinutes(); 
+
+    const msg = {
+      uname: $("#uname").val(),
+      text: $("#text").val(),
+      date: y+"年"+m+"月"+d+"日"+h+"時"+mi+"分"
+    }
+    const newPostRef = push(dbRef); //ユニークKEYを生成
+    set(newPostRef, msg);           //"chat"にユニークKEYをつけてオブジェクトデータを登録
+  });
+
+  //最初にデータ取得＆onSnapshotでリアルタイムにデータを取得
+  onChildAdded(dbRef, function(data){   
+    const msg  = data.val();    //オブジェクトデータを取得し、変数msgに代入
+    const key  = data.key;      //データのユニークキー（削除や更新に使用可能）
+    //表示用テキスト・HTMLを作成
+    let h = '<p>';
+        h += msg.date;
+        h += '</p><p>';
+        h += msg.uname;
+        h += '<br>';
+        h += msg.text;
+        h += '</p>';
+        $("#output").append(h); //#outputの最後に追加
+  });
+
+</script>
 
 <script>
 
@@ -307,12 +384,19 @@ function update(){
 
 //1.Save クリックイベント
 $("#save").on("click",function(){
-    const key = localStorage.length+1;
-    const value = [];
-    value[0]= $("#date").val();
-    value[1]= $("#time").val();
-    value[2] = $("#clame_content").val();
-    value[3] = $("#response_content").val();
+    const value = {
+      date: $("#date").val(),
+      time: $("#time").val(),
+      clame_content: $("#clame_content").val(),
+      response_content: $("#response_content").val()
+    };
+    const count = {
+      count: 
+    };
+    
+    const newPostRef = push(dbRef);//UnieqIDを発行
+    set(newPostRef, msg);//set(ID名, 値)
+
     const stabilizearray = JSON.stringify(value);
     localStorage.setItem(key,stabilizearray);
     const html = '<tr><td>'+key+'</td><td>'+value[0]+'</td><td>'+value[1]+'分</td><td>'+value[2]+'</td><td>'+value[3]+'</td></tr>';
